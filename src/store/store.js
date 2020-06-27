@@ -1,9 +1,9 @@
 import { createStore } from 'redux';
 
-import dashboardReducer from '../reducers/dashboardReducer';
+import rootReducer from '../reducers/rootReducer';
  
 const store = createStore(
-  dashboardReducer,
+  rootReducer,
 );
 
 export default store;

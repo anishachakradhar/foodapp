@@ -75,6 +75,23 @@
   color: rgb(92, 130, 190);
 }
 
+#submit {
+  position: relative;
+  margin-top: 30px;
+  padding: 30px;
+}
+
+#submit-button {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+}
+
+#image-button::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
 @media (min-width: 1024px) {
 
   .icon-side-menu {

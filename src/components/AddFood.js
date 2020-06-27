@@ -1,50 +1,102 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import { Form, Divider, Grid, Input, TextArea, Icon, Label, Button, Header } from 'semantic-ui-react';
 
-export default class AddFood extends Component {
+import { addFood } from '../reducers/addFoodReducer';
+
+class AddFood extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addIngredients: [],
-      firstIngredient: '',
-      addDescription: [],
-      name: '',
-      description: '',
-      image: ''
+      ingredients: [],
+      steps: [],
+      food: {
+        name: '',
+        description: '',
+        image: '',
+        firstIngredient: ''
+      }
     }
-  }
-
-  addField = () => {
-    this.setState({
-      addIngredients: [...this.state.addIngredients, '']
-    })
-  }
-
-  removeField  = (index) => {
-    const { addIngredients } = this.state
-
-    for( let i = 0; i < addIngredients.length; i++){
-      if(i === index)
-        addIngredients.splice(i,1);
-    }
-
-    this.setState({
-      addIngredients
-    })
   }
 
   handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      food: {
+        ...this.state.food,
+        [e.target.name]: e.target.value
+      }
+    })
+  }
+
+  addIngredientField = () => {
+    this.setState({
+      ingredients: [...this.state.ingredients, '']
+    })
+  }
+
+  removeIngredientField  = (index) => {
+    const { ingredients } = this.state
+    ingredients.splice(index, 1);
+
+    this.setState({
+      ingredients
     })
   }
 
   handleAddIngredient = (e, index) => {
-    const { addIngredients } = this.state
-    addIngredients[index] = e.target.value
+    const { ingredients } = this.state
+    ingredients[index] = e.target.value
     this.setState({
-      addIngredients
+      ingredients
+    })
+  }
+
+  addStepField = () => {
+    this.setState({
+      steps: [...this.state.steps, '']
+    })
+  }
+
+  removeStepField  = (index) => {
+    const { steps } = this.state
+    steps.splice(index, 1);
+
+    this.setState({
+      steps
+    })
+  }
+
+  handleAddStep = (e, index) => {
+    const { steps } = this.state
+    steps[index] = e.target.value
+    this.setState({
+      steps
+    })
+  }
+
+  handleSubmit = () => {
+    const { food } = this.state
+    const { steps } = this.state
+
+    let ingredients;
+    if (this.state.food.firstIngredient) 
+      ingredients = [this.state.food.firstIngredient, ...this.state.ingredients]
+    else 
+      ingredients = this.state.ingredients
+    
+    this.props.actions.addFood(food, ingredients, steps);
+
+    this.setState({
+      food: {
+        name: '',
+        description: '',
+        image: '',
+        firstIngredient: ''
+      },
+      ingredients: [],
+      steps: []
     })
   }
 
@@ -58,11 +110,11 @@ export default class AddFood extends Component {
             <Grid.Column width={8}>
               <h3>Basics</h3>
               <Divider />
-              <Form.Input name='name' label='Name' placeholder='Enter food name' width={14} onChange={this.handleChange} />
+              <Form.Input name='name' value={this.state.food.name} label='Name' placeholder='Enter food name' width={14} onChange={this.handleChange} />
               <Form.Input label='Description' width={14}>
-                <TextArea name='description' placeholder='Enter your food description' onChange={this.handleChange} />
+                <TextArea name='description' value={this.state.food.description} placeholder='Enter your food description' onChange={this.handleChange} />
               </Form.Input>
-              <Form.Input name='image' type='file' label='Food Image' width={14} onChange={this.handleChange} />
+              <Form.Input name='image' type='file' id="image-button" value={this.state.food.image} label='Food Image' width={14} onChange={this.handleChange} />
               <h3>Recipe</h3>
               <Divider />
               <Form.Field>
@@ -73,24 +125,24 @@ export default class AddFood extends Component {
                   <Grid.Column width={11}>
                     <Grid>
                       <Grid.Column width={14}>
-                        <Input label='1' name='firstIngredient' placeholder='Enter your ingredient' value={this.state.firstIngredient} onChange={this.handleChange} /> 
+                        <Input label='1' name='firstIngredient' value={this.state.food.firstIngredient} placeholder='Enter your ingredient' onChange={this.handleChange} /> 
                       </Grid.Column>
                     </Grid>
-                    {this.state.addIngredients.map((field, index) => {
+                    {this.state.ingredients.map((field, index) => {
                       return (
                         <Grid key={index}>
                           <Grid.Column width={14}>
-                            <Input label={index+2} name='addIngredients' placeholder='Enter your ingredient' value={field} onChange={(e) => this.handleAddIngredient(e, index)} />
+                            <Input label={index+2} name='ingredients' placeholder='Enter your ingredient' value={field} onChange={(e) => this.handleAddIngredient(e, index)} />
                           </Grid.Column>
                           <Grid.Column width={2}>
-                            <Icon name='minus circle' size='large' style={{ padding: '10px' }} onClick={(e) => this.removeField(index)}/>
+                            <Icon name='minus circle' size='large' style={{ padding: '10px' }} onClick={(e) => this.removeIngredientField(index)}/>
                           </Grid.Column>
                         </Grid>
                       )}
                     )}
                     <Grid>
                       <Grid.Column width={14}>
-                        <Button floated='right' fluid onClick={this.addField}><Icon name='plus' />Add Field</Button>
+                        <Button floated='right' fluid onClick={this.addIngredientField}><Icon name='plus' />Add Ingredient</Button>
                       </Grid.Column>
                     </Grid>
                   </Grid.Column>
@@ -98,29 +150,29 @@ export default class AddFood extends Component {
               </Form.Field>
             </Grid.Column>
             <Grid.Column width={8}>
-              <h3>Description</h3>
+              <h3>Directions</h3>
               <Divider />
               <Form.Field>
                 <Grid>
                   <Grid.Column>
-                    {this.state.addIngredients.map((field, index) => {
+                    {this.state.steps.map((field, index) => {
                       return (
                         <Grid key={index}>
                           <Grid.Column width={3}>
                             <Label pointing='right' size='large'>Step {index+1}</Label>
                           </Grid.Column>
                           <Grid.Column width={11}>
-                            <TextArea name='addIngredients' placeholder='Enter your description' value={field} onChange={(e) => this.handleAddIngredient(e, index)} />
+                            <TextArea name='ingredients' placeholder='Enter your description' value={field} onChange={(e) => this.handleAddStep(e, index)} />
                           </Grid.Column>
                           <Grid.Column width={2}>
-                            <Icon name='minus circle' size='large' style={{ padding: '10px' }} onClick={(e) => this.removeField(index)}/>
+                            <Icon name='minus circle' size='large' style={{ padding: '10px' }} onClick={(e) => this.removeStepField(index)}/>
                           </Grid.Column>
                         </Grid>
                       )}
                     )}
                     <Grid>
                       <Grid.Column width={16}>
-                        <Button floated='right' fluid onClick={this.addField}><Icon name='plus' />Add Steps</Button>
+                        <Button floated='right' fluid onClick={this.addStepField}><Icon name='plus' />Add Steps</Button>
                       </Grid.Column>
                     </Grid>
                   </Grid.Column>
@@ -128,8 +180,28 @@ export default class AddFood extends Component {
               </Form.Field>
             </Grid.Column>
           </Grid>
+          <div id="submit">
+            <Button id="submit-button" onClick={this.handleSubmit}>Submit</Button>
+          </div>
         </Form>
       </div>
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    
+  }
+}
+
+const mapActionToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators({
+      addFood
+    }, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapActionToProps)(AddFood);
+  
