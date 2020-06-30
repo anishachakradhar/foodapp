@@ -6,6 +6,7 @@ import Dashboard from './Dashboard'
 import { Switch, Route } from 'react-router-dom'
 import AddFood from './AddFood'
 import ListFood from './ListFood'
+import FoodDetails from './FoodDetails'
 
 export default class Home extends Component {
   render() {
@@ -18,6 +19,7 @@ export default class Home extends Component {
           </Grid.Column>
           <Grid.Column width={14} id="content">
             <Switch>
+              <Route path='/food-detail/:id' component={ FoodDetails } />
               <Route path='/add-food' component={ AddFood } />
               <Route path='/list-food' component={ ListFood } />
               <Route path='/' component={ Dashboard } />

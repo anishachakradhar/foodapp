@@ -92,6 +92,22 @@
   visibility: hidden;
 }
 
+.detail-page-grid {
+  padding: 40px;
+}
+
+#list-item {
+  margin: 30px;
+}
+
+#right-button {
+  float: right;
+}
+
+#ingre-steps-list {
+  color: black;
+}
+
 @media (min-width: 1024px) {
 
   .icon-side-menu {
