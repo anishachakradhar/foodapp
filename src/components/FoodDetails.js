@@ -1,11 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 
 import { Item, Grid, List, Button, Label } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+
+import { deleteFood } from '../reducers/addFoodReducer';
 
 class FoodDetails extends Component {
+
+  handleDelete = (index) => {
+    this.props.actions.deleteFood(index);
+    this.props.history.push('/list-food');
+  }
+
   render() {
+  console.log(this.props);
 
     return (
       <div className="container">
@@ -14,7 +24,7 @@ class FoodDetails extends Component {
           parseInt(this.props.match.params.id) === index &&
             <div key={index}>
               <h2>{selectedFood.basics.name}</h2>
-              <Button color='red' id="right-button">Delete</Button>
+              <Button color='red' id="right-button" onClick={() => this.handleDelete(index)}>Delete</Button>
               <Button primary id="right-button">Edit</Button>
               <Item.Group>
                 <Item>
@@ -76,4 +86,12 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(FoodDetails);
+const mapActionToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators({
+      deleteFood
+    }, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapActionToProps)(FoodDetails);

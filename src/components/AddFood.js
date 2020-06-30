@@ -9,14 +9,21 @@ import { addFood } from '../reducers/addFoodReducer';
 class AddFood extends Component {
   constructor(props) {
     super(props);
+
+    const updateIndex = parseInt(props.match.params.id, 10)
+    const food = updateIndex >= 0 ? props.foods[updateIndex] : {}
+    
+    console.log('this is fooodd...........',food, food['basics'])
+
     this.state = {
-      ingredients: [],
-      steps: [],
+      updateIndex,
+      ingredients       : food.ingredients || [],
+      steps             : food.steps || [],
       food: {
-        name: '',
-        description: '',
-        image: '',
-        firstIngredient: ''
+        name            : food.name || '',
+        description     : food.description || '',
+        image           : food.image || '',
+        firstIngredient : food.firstIngredient || ''
       }
     }
   }
@@ -191,7 +198,7 @@ class AddFood extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    
+    foods: state.addFood.foods
   }
 }
 

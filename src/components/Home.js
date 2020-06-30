@@ -21,6 +21,7 @@ export default class Home extends Component {
             <Switch>
               <Route path='/food-detail/:id' component={ FoodDetails } />
               <Route path='/add-food' component={ AddFood } />
+              <Route path='/edit-food/:id' component={ AddFood } />
               <Route path='/list-food' component={ ListFood } />
               <Route path='/' component={ Dashboard } />
             </Switch>

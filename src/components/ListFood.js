@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-
-import { Button, Item, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+
+import { Button, Item, Divider } from 'semantic-ui-react';
+
+import { deleteFood } from '../reducers/addFoodReducer';
 
 class ListFood extends Component {
   render() {
@@ -23,8 +26,8 @@ class ListFood extends Component {
                     <Item.Extra>
                       <Button.Group>
                         <Button color='teal' as={ Link } to={`/food-detail/${index}`}>View</Button>
-                        <Button color='blue'>Edit</Button>
-                        <Button color='red'>Delete</Button>
+                        <Button color='blue' as={ Link } to={`/edit-food/${index}`}>Edit</Button>
+                        <Button color='red' onClick={() => this.props.actions.deleteFood(index)}>Delete</Button>
                       </Button.Group>
                     </Item.Extra>
                   </Item.Content>
@@ -45,4 +48,12 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(ListFood);
+const mapActionToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators({
+      deleteFood
+    }, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapActionToProps)(ListFood);

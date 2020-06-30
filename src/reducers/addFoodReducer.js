@@ -12,6 +12,10 @@ export default function addFoodReducer( state = initialState, action) {
       return {
         foods: state.foods.concat([foods])
       }
+    case 'DELETE_FOOD':
+      return {
+        foods: state.foods.filter((food, i) => i !== action.index)
+      }
     default:
       return state;
   }
@@ -23,5 +27,12 @@ export function addFood(food, ingredients, steps) {
     food,
     ingredients,
     steps
+  }
+}
+
+export function deleteFood(index) {
+  return {
+    type: 'DELETE_FOOD',
+    index
   }
 }
