@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { Button, Item, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 class ListFood extends Component {
   render() {
@@ -20,11 +21,11 @@ class ListFood extends Component {
                       {food.basics.description}
                     </Item.Description>
                     <Item.Extra>
-                    <Button.Group>
-                      <Button color='blue'>Edit</Button>
-                      <Button.Or />
-                      <Button color='teal'>View</Button>
-                    </Button.Group>
+                      <Button.Group>
+                        <Button color='teal' as={ Link } to={`/food-detail/${index}`}>View</Button>
+                        <Button color='blue'>Edit</Button>
+                        <Button color='red'>Delete</Button>
+                      </Button.Group>
                     </Item.Extra>
                   </Item.Content>
                 </Item>
