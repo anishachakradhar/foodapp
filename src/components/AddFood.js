@@ -13,19 +13,19 @@ class AddFood extends Component {
     const updateIndex = parseInt(props.match.params.id, 10)
     const food = updateIndex >= 0 ? props.foods[updateIndex] : {}
     
-    console.log('this is fooodd...........',food, food['basics'])
-
     this.state = {
       updateIndex,
       ingredients       : food.ingredients || [],
       steps             : food.steps || [],
       food: {
-        name            : food.name || '',
-        description     : food.description || '',
-        image           : food.image || '',
-        firstIngredient : food.firstIngredient || ''
+        name            : food.basics? food.basics.name : '',
+        description     : food.basics? food.basics.description : '',
+        image           : food.basics? food.basics.image : '',
+        firstIngredient : food.basics? food.basics.firstIngredient : '',
       }
     }
+
+    console.log('this is state........',this.state);
   }
 
   handleChange = (e) => {

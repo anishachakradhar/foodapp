@@ -5,7 +5,7 @@ const initialState = {
 export default function addFoodReducer( state = initialState, action) {
   switch(action.type) {
     case 'ADD_FOOD':
-      const foods = []
+      const foods = {}
       foods.basics = action.food
       foods.ingredients = action.ingredients
       foods.steps = action.steps
