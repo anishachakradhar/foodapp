@@ -9,8 +9,8 @@ import { deleteFood } from '../reducers/addFoodReducer';
 
 class FoodDetails extends Component {
 
-  handleDelete = (index) => {
-    this.props.actions.deleteFood(index);
+  handleDelete = (id) => {
+    this.props.actions.deleteFood(id);
     this.props.history.push('/list-food');
   }
 
@@ -21,11 +21,11 @@ class FoodDetails extends Component {
       <div className="container">
         {this.props.foods.length ?
           this.props.foods.map((selectedFood, index) => 
-          parseInt(this.props.match.params.id) === index &&
+          this.props.match.params.id === selectedFood.id &&
             <div key={index}>
               <h2>{selectedFood.basics.name}</h2>
-              <Button color='red' id="right-button" onClick={() => this.handleDelete(index)}>Delete</Button>
-              <Button primary id="right-button">Edit</Button>
+              <Button color='red' id="right-button" onClick={() => this.handleDelete(selectedFood.id)}>Delete</Button>
+              <Button primary id="right-button" as={ Link } to={`/edit-food/${selectedFood.id}`}>Edit</Button>
               <Item.Group>
                 <Item>
                   <Item.Image size='medium' src='https://react.semantic-ui.com/images/avatar/large/molly.png' rounded />

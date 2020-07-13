@@ -13,7 +13,6 @@ class ListFood extends Component {
       <div className="container">
         {this.props.foods.length ?
             <Item.Group>
-              {console.log(this.props.foods)}
               {this.props.foods.map((food, index) => 
                 <Item key={index}>
                   <Item.Image size='medium' src='https://react.semantic-ui.com/images/avatar/large/molly.png' rounded />
@@ -25,9 +24,9 @@ class ListFood extends Component {
                     </Item.Description>
                     <Item.Extra>
                       <Button.Group>
-                        <Button color='teal' as={ Link } to={`/food-detail/${index}`}>View</Button>
-                        <Button color='blue' as={ Link } to={`/edit-food/${index}`}>Edit</Button>
-                        <Button color='red' onClick={() => this.props.actions.deleteFood(index)}>Delete</Button>
+                        <Button color='teal' as={ Link } to={`/food-detail/${food.id}`}>View</Button>
+                        <Button color='blue' as={ Link } to={`/edit-food/${food.id}`}>Edit</Button>
+                        <Button color='red' onClick={() => this.props.actions.deleteFood(food.id)}>Delete</Button>
                       </Button.Group>
                     </Item.Extra>
                   </Item.Content>

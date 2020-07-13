@@ -4,28 +4,51 @@ import { bindActionCreators } from 'redux';
 
 import { Form, Divider, Grid, Input, TextArea, Icon, Label, Button, Header } from 'semantic-ui-react';
 
-import { addFood } from '../reducers/addFoodReducer';
+import { addFood, editFood } from '../reducers/addFoodReducer';
 
 class AddFood extends Component {
   constructor(props) {
     super(props);
-
-    const updateIndex = parseInt(props.match.params.id, 10)
-    const food = updateIndex >= 0 ? props.foods[updateIndex] : {}
     
+    const updateIndex = props.match.params.id || null
+    const food = updateIndex ? this.getFood(updateIndex) : {}
+
     this.state = {
       updateIndex,
+      id                : food.id || '',
       ingredients       : food.ingredients || [],
       steps             : food.steps || [],
       food: {
-        name            : food.basics? food.basics.name : '',
-        description     : food.basics? food.basics.description : '',
-        image           : food.basics? food.basics.image : '',
-        firstIngredient : food.basics? food.basics.firstIngredient : '',
+        name            : food.basics?.name || '',
+        description     : food.basics?.description || '',
+        image           : food.basics?.image || '',
+        firstIngredient : food.basics?.firstIngredient || '',
       }
     }
+  }
 
-    console.log('this is state........',this.state);
+  getFood = (updateIndex) => {
+    for (let i = 0; i < this.props.foods.length; i+=1) {
+      if (this.props.foods[i].id === updateIndex)
+        return this.props.foods[i]
+    }
+  }
+
+  componentDidUpdate = (oldProps) => {
+    if (oldProps.match.params.id === this.state.updateIndex && !this.props.match.params.id) {
+      this.setState({
+        updateIndex: null,
+        id: '',
+        ingredients: [],
+        steps: [],
+        food: {
+          name: '',
+          description: '',
+          image: '',
+          firstIngredient: ''
+        }
+      })
+    }
   }
 
   handleChange = (e) => {
@@ -84,7 +107,8 @@ class AddFood extends Component {
   }
 
   handleSubmit = () => {
-    const { food } = this.state
+    const { id }    = this.state
+    const { food }  = this.state
     const { steps } = this.state
 
     let ingredients;
@@ -93,9 +117,17 @@ class AddFood extends Component {
     else 
       ingredients = this.state.ingredients
     
-    this.props.actions.addFood(food, ingredients, steps);
+    if (this.state.updateIndex) {
+      this.props.actions.editFood(id, food, ingredients, steps)
+      this.props.history.push(`/food-detail/${id}`)
+    } else {
+      const id = Math.random().toString(36).substr(2, 7)
+      this.props.actions.addFood(id, food, ingredients, steps)
+    }
 
     this.setState({
+      updateIndex: null,
+      id: '',
       food: {
         name: '',
         description: '',
@@ -205,7 +237,8 @@ const mapStateToProps = (state) => {
 const mapActionToProps = (dispatch) => {
   return {
     actions: bindActionCreators({
-      addFood
+      addFood,
+      editFood
     }, dispatch)
   }
 }
