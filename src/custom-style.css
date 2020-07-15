@@ -108,8 +108,13 @@
   color: black;
 }
 
-@media (min-width: 1024px) {
+.page-not-found {
+  margin: 60px;
+  font-size: large;
+  color: rgb(92, 130, 190);
+}
 
+@media (min-width: 1024px) {
   .icon-side-menu {
     display: none;
   }
@@ -124,7 +129,6 @@
 }
 
 @media (min-width: 1440px) {
-
   .icon-side-menu {
     display: none;
   }
@@ -137,4 +141,3 @@
     width: 210px;
   }
 }
-

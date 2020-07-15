@@ -1,7 +1,7 @@
 const initialState = {
-  dashboard: []
-}
+  dashboard: [],
+};
 
-export default function dashboardReducer( state = initialState, action) {
+export default function dashboardReducer(state = initialState, action) {
   return state;
-} 
+}

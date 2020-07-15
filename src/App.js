@@ -4,7 +4,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 
 import 'semantic-ui-css/semantic.min.css';
-import './custom-style.css'
+import './custom-style.css';
 
 import store from './store/store';
 import Home from './components/Home';
