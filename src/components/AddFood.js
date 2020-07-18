@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import cloneDeep from 'lodash/cloneDeep';
 
 import {
   Form,
@@ -18,21 +19,26 @@ import { addFood, editFood } from '../reducers/addFoodReducer';
 
 const initialFood = {
   id: '',
-  ingredients: [],
-  steps: [],
+  ingredients: [''],
+  steps: [''],
   food: {
     name: '',
     description: '',
     image: '',
-    firstIngredient: '',
   },
+  errors: {},
+};
+
+const globalErrors = {
+  name: 'Name field is empty.',
+  description: 'Description field is empty.',
 };
 
 class AddFood extends Component {
   constructor(props) {
     super(props);
     this.updateIndex = props.match.params.id;
-    this.state = this.getFood(this.updateIndex) ?? { ...initialFood };
+    this.state = this.getFood(this.updateIndex) ?? cloneDeep(initialFood);
   }
 
   getFood = (updateIndex) =>
@@ -98,18 +104,43 @@ class AddFood extends Component {
   };
 
   handleSubmit = () => {
-    if (this.updateIndex) {
-      this.props.actions.editFood(this.state);
-      this.props.history.push(`/food-detail/${this.state.id}`);
-    } else {
-      const id = Math.random().toString(36).substr(2, 7);
-      const ingredients = [
-        this.state.food.firstIngredient,
-        ...this.state.ingredients,
-      ];
-      this.props.actions.addFood({ ...this.state, id, ingredients });
+    if (this.handleValidation()) {
+      let errors = {};
+      if (this.updateIndex) {
+        this.props.actions.editFood(this.state, errors);
+        this.props.history.push(`/food-detail/${this.state.id}`);
+      } else {
+        const id = Math.random().toString(36).substr(2, 7);
+        this.props.actions.addFood({ ...this.state, id, errors });
+      }
+      this.setState(cloneDeep(initialFood));
     }
-    this.setState(initialFood);
+  };
+
+  handleValidation = () => {
+    let fields = this.state;
+    let errors = {};
+    let isValid = true;
+
+    if (fields['ingredients'].includes('') || !fields['ingredients'].length) {
+      errors['ingredients'] = 'Ingredients field is empty.';
+      isValid = false;
+    }
+
+    if (fields['steps'].includes('') || !fields['ingredients'].length) {
+      errors['steps'] = 'Directions field is empty.';
+      isValid = false;
+    }
+
+    for (let field in fields['food']) {
+      if (!fields['food'][field] && field !== 'image') {
+        errors[field] = globalErrors[field];
+        isValid = false;
+      }
+    }
+
+    this.setState({ errors });
+    return isValid;
   };
 
   render() {
@@ -118,6 +149,17 @@ class AddFood extends Component {
         <h3>Add Food</h3>
         <Divider />
         <Form id="form">
+          {Object.keys(this.state.errors).length !== 0 && (
+            <div className="ui form error custom-error">
+              <div className="ui error message">
+                <ul className="list">
+                  {Object.keys(this.state.errors).map((key, index) => (
+                    <li key={index}>{Object.values(this.state.errors[key])}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
           <Grid divided>
             <Grid.Column width={8}>
               <h3>Basics</h3>
@@ -129,8 +171,9 @@ class AddFood extends Component {
                 placeholder="Enter food name"
                 width={14}
                 onChange={this.handleChange}
+                className="required"
               />
-              <Form.Input label="Description" width={14}>
+              <Form.Input label="Description" width={14} className="required">
                 <TextArea
                   name="description"
                   value={this.state.food.description}
@@ -152,28 +195,17 @@ class AddFood extends Component {
               <Form.Field>
                 <Grid>
                   <Grid.Column width={3}>
-                    <Header as="h5">Add Ingredients</Header>
+                    <Header as="h5" className="required">
+                      Ingredients
+                    </Header>
                   </Grid.Column>
                   <Grid.Column width={11}>
-                    {!this.updateIndex && (
-                      <Grid>
-                        <Grid.Column width={14}>
-                          <Input
-                            label="1"
-                            name="firstIngredient"
-                            value={this.state.food.firstIngredient}
-                            placeholder="Enter your ingredient"
-                            onChange={this.handleChange}
-                          />
-                        </Grid.Column>
-                      </Grid>
-                    )}
                     {this.state.ingredients.map((field, index) => {
                       return (
                         <Grid key={index}>
                           <Grid.Column width={14}>
                             <Input
-                              label={this.updateIndex ? index + 1 : index + 2}
+                              label={index + 1}
                               name="ingredients"
                               placeholder="Enter your ingredient"
                               value={field}
@@ -182,14 +214,18 @@ class AddFood extends Component {
                               }
                             />
                           </Grid.Column>
-                          <Grid.Column width={2}>
-                            <Icon
-                              name="minus circle"
-                              size="large"
-                              style={{ padding: '10px' }}
-                              onClick={(e) => this.removeIngredientField(index)}
-                            />
-                          </Grid.Column>
+                          {index !== 0 && (
+                            <Grid.Column width={2}>
+                              <Icon
+                                name="minus circle"
+                                size="large"
+                                style={{ padding: '10px' }}
+                                onClick={(e) =>
+                                  this.removeIngredientField(index)
+                                }
+                              />
+                            </Grid.Column>
+                          )}
                         </Grid>
                       );
                     })}
@@ -214,6 +250,13 @@ class AddFood extends Component {
               <Divider />
               <Form.Field>
                 <Grid>
+                  <Grid.Column width={3}>
+                    <Header as="h5" className="required">
+                      Steps
+                    </Header>
+                  </Grid.Column>
+                </Grid>
+                <Grid>
                   <Grid.Column>
                     {this.state.steps.map((field, index) => {
                       return (
@@ -231,14 +274,16 @@ class AddFood extends Component {
                               onChange={(e) => this.handleAddStep(e, index)}
                             />
                           </Grid.Column>
-                          <Grid.Column width={2}>
-                            <Icon
-                              name="minus circle"
-                              size="large"
-                              style={{ padding: '10px' }}
-                              onClick={(e) => this.removeStepField(index)}
-                            />
-                          </Grid.Column>
+                          {index !== 0 && (
+                            <Grid.Column width={2}>
+                              <Icon
+                                name="minus circle"
+                                size="large"
+                                style={{ padding: '10px' }}
+                                onClick={(e) => this.removeStepField(index)}
+                              />
+                            </Grid.Column>
+                          )}
                         </Grid>
                       );
                     })}
@@ -271,7 +316,6 @@ class AddFood extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     foods: state.addFood.foods,
   };

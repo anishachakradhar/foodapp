@@ -114,6 +114,17 @@
   color: rgb(92, 130, 190);
 }
 
+.custom-error {
+  margin-bottom: 40px;
+}
+
+.required.label,
+.required.header:after {
+  content: ' *';
+  color: red;
+  display: inline;
+}
+
 @media (min-width: 1024px) {
   .icon-side-menu {
     display: none;
